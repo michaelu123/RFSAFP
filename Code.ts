@@ -680,7 +680,7 @@ function updateForm() {
     beschreibung = "Leider sind alle Kurse ausgebucht!\n" + descs.join("\n");
     form.setAcceptingResponses(false);
     form.setCustomClosedFormMessage(
-      "Leider sind alle Kurse ausgebucht! Sie können sich in eine Warteliste https://forms.gle/aVMXBwkgy7GrtBy36 eintragen.\n",
+      "Leider sind alle Kurse ausgebucht! Sie können sich in eine Warteliste https://forms.gle/cAKhzbrBFaR15MbF7 eintragen.\n",
     );
   } else {
     beschreibung =
