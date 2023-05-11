@@ -109,7 +109,7 @@ function init() {
       verifikationsIndex = sheetHeaders["Verifikation"];
       anmeldebestIndex = sheetHeaders["Anmeldebestätigung"];
       bezahltIndex = sheetHeaders["Bezahlt"];
-      eigenesIndex = sheetHeaders["Ich komme mit meinem eigenen Fahrrad"]
+      eigenesIndex = sheetHeaders["Ich komme mit meinem eigenen Fahrrad"];
 
       if (verifikationsIndex == null) {
         verifikationsIndex = addColumn(sheet, sheetHeaders, "Verifikation");
@@ -237,13 +237,12 @@ function anmeldebestätigung() {
     "Wir ziehen die Teilnahmegebühr von " +
     betrag +
     "€ in den nächsten Tagen ein.";
-  
+
   let eigenes = rowValues[eigenesIndex - 1];
-  let eigenesText = "noch nicht wissen, ob Sie mit dem eigenen Rad kommen werden. Kein Problem - wir haben auf jeden Fall ein Fahrrad für Sie, falls Sie kein eigenes Rad mitbringen.";
-  if (eigenes === "Ja") 
-    eigenesText = "mit dem eigenen Fahrrad kommen.";
-  else if (eigenes == "Nein")
-    eigenesText = "ein Rad von uns ausleihen.";
+  let eigenesText =
+    "noch nicht wissen, ob Sie mit dem eigenen Rad kommen werden. Kein Problem - wir haben auf jeden Fall ein Fahrrad für Sie, falls Sie kein eigenes Rad mitbringen.";
+  if (eigenes === "Ja") eigenesText = "mit dem eigenen Fahrrad kommen.";
+  else if (eigenes == "Nein") eigenesText = "ein Rad von uns ausleihen.";
 
   let kursRow = null;
   let kurseS: Array<Array<string>> = kurseSheet.getSheetValues(
@@ -264,7 +263,10 @@ function anmeldebestätigung() {
     return;
   }
 
-  let termin = any2Str(kursRow[tag1Index - 1], "E 'den' dd.MM", false) + " von " + kursRow[uhrZeitIndex - 1];
+  let termin =
+    any2Str(kursRow[tag1Index - 1], "E 'den' dd.MM", false) +
+    " von " +
+    kursRow[uhrZeitIndex - 1];
   Logger.log("termin %s", termin);
 
   template.anrede = anrede;
@@ -379,9 +381,9 @@ function sendVerifEmail(rowValues: any[]) {
     "Allgemeiner Deutscher Fahrrad-Club München e.V.\n" +
     "Platenstraße 4\n" +
     "80336 München\n" +
-    "Tel. 089 | 773429 Fax 089 | 778537\n" +
+    "Tel. 089 | 46133830 (Mo. bis Mi. + Fr.)\n" +
     "radfahrschule@adfc-muenchen.de\n" +
-    "www.adfc-muenchen.de\n";
+    "https://muenchen.adfc.de/radfahrschule\n";
   let options = {
     name: "Radfahrschule ADFC München e.V.",
     replyTo: "radfahrschule@adfc-muenchen.de",
@@ -622,6 +624,7 @@ function updateForm() {
     let ok = true;
     // check if all cells of Kurse row are nonempty
     for (let hdr in kurseHdrs) {
+      if (hdr.startsWith("Trainer")) break;
       if (!hdr.startsWith("Tag") && isEmpty(kurseObj[hdr])) ok = false;
     }
     // if (ok) {
@@ -706,10 +709,9 @@ function sendWrongIbanEmail(anrede: string, empfaenger: string, iban: string) {
     "Allgemeiner Deutscher Fahrrad-Club München e.V.\n" +
     "Platenstraße 4\n" +
     "80336 München\n" +
-    "Tel. 089 | 773429 Fax 089 | 778537\n" +
+    "Tel. 089 | 46133830 (Mo. bis Mi. + Fr.)\n" +
     "radfahrschule@adfc-muenchen.de\n" +
-    "www.adfc-muenchen.de\n";
-
+    "https://muenchen.adfc.de/radfahrschule\n";
   GmailApp.sendEmail(empfaenger, subject, body);
 }
 
