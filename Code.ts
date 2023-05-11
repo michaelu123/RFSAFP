@@ -43,7 +43,7 @@ let printCols = new Map([
   ["Ort", "Ort"],
 ]);
 
-const kursFrage = "Welchen Kurs möchten sie belegen?";
+const kursFrage = "Welchen Kurs möchten Sie belegen?";
 
 interface Event {
   namedValues: { [others: string]: string[] };
