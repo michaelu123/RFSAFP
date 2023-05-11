@@ -618,13 +618,15 @@ function updateForm() {
     let kurseObj: MapS2S = {};
     for (let hdr in kurseHdrs) {
       let idx = kurseHdrs[hdr];
+      if (idx > restIndex) continue;
       // Logger.log("hdr %s %s", hdr, idx);
       kurseObj[hdr] = kurseVals[i][idx - 1];
     }
     let ok = true;
     // check if all cells of Kurse row are nonempty
     for (let hdr in kurseHdrs) {
-      if (hdr.startsWith("Trainer")) break;
+      let idx = kurseHdrs[hdr];
+      if (idx > restIndex) continue;
       if (!hdr.startsWith("Tag") && isEmpty(kurseObj[hdr])) ok = false;
     }
     // if (ok) {
