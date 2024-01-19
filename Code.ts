@@ -19,6 +19,7 @@ let mailIndex: number; // E-Mail-Adresse
 let kursIndexB: number; // Welchen Kurs möchten Sie belegen?
 let herrFrauIndex: number; // Anrede
 let nameIndex: number; // Name
+let mitgliedsNummerIndex: number; // ADFC-Mitgliedsnummer falls Mitglied
 let zustimmungsIndex: number; // Zustimmung zur SEPA-Lastschrift
 let bestätigungsIndex: number; // Bestätigung (der Teilnahmebedingungen)
 let verifikationsIndex: number; // Verifikation (der Email-Adresse)
@@ -107,6 +108,8 @@ function init() {
       kursIndexB = sheetHeaders[kursFrage];
       herrFrauIndex = sheetHeaders["Anrede"];
       nameIndex = sheetHeaders["Name"];
+      mitgliedsNummerIndex =
+        sheetHeaders["ADFC-Mitgliedsnummer falls Mitglied"];
       zustimmungsIndex = sheetHeaders["Zustimmung zur SEPA-Lastschrift"];
       bestätigungsIndex = sheetHeaders["Bestätigung"];
       verifikationsIndex = sheetHeaders["Verifikation"];
@@ -179,8 +182,8 @@ function attachmentFiles(): GoogleAppsScript.Drive.File[] {
   return files; // why not use PDFs directly??
 }
 
-function kursPreis(_kurs: string): number {
-  return 35;
+function kursPreis(_kurs: string, mitgliedsNummer: string): number {
+  return isEmpty(mitgliedsNummer) ? 35 : 20;
 }
 
 function anmeldebestätigung() {
@@ -234,8 +237,9 @@ function anmeldebestätigung() {
     HtmlService.createTemplateFromFile("emailBestätigung.html");
 
   let kurs: string = rowValues[kursIndexB - 1];
+  let mitgliedsNummer: string = rowValues[mitgliedsNummerIndex - 1];
 
-  let betrag: number = kursPreis(kurs);
+  let betrag: number = kursPreis(kurs, mitgliedsNummer);
   let zahlungsText =
     "Wir ziehen die Teilnahmegebühr von " +
     betrag +
