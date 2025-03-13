@@ -108,8 +108,7 @@ function init() {
       kursIndexB = sheetHeaders[kursFrage];
       herrFrauIndex = sheetHeaders["Anrede"];
       nameIndex = sheetHeaders["Name"];
-      mitgliedsNummerIndex =
-        sheetHeaders["ADFC-Mitgliedsnummer falls Mitglied"];
+      mitgliedsNummerIndex = sheetHeaders["ADFC-Mitgliedsnummer falls Mitglied"];
       zustimmungsIndex = sheetHeaders["Zustimmung zur SEPA-Lastschrift"];
       bestätigungsIndex = sheetHeaders["Bestätigung"];
       verifikationsIndex = sheetHeaders["Verifikation"];
@@ -171,9 +170,7 @@ function attachmentFiles(): GoogleAppsScript.Drive.File[] {
   let thisFile = DriveApp.getFileById(thisFileId);
   let parent = thisFile.getParents().next();
   let grandPa = parent.getParents().next();
-  let attachmentFolder = grandPa
-    .getFoldersByName("Anhänge für Anfänger")
-    .next();
+  let attachmentFolder = grandPa.getFoldersByName("Anhänge für Fahrpraxis für Anfänger").next();
   let PDFs = attachmentFolder.getFilesByType("application/pdf"); // MimeType.PDF
   let files = [];
   while (PDFs.hasNext()) {
@@ -191,9 +188,7 @@ function anmeldebestätigung() {
   if (!updateReste()) return;
   let sheet = SpreadsheetApp.getActiveSheet();
   if (sheet.getName() != "Buchungen") {
-    SpreadsheetApp.getUi().alert(
-      "Bitte eine Zeile im Sheet 'Buchungen' selektieren",
-    );
+    SpreadsheetApp.getUi().alert("Bitte eine Zeile im Sheet 'Buchungen' selektieren");
     return;
   }
   let curCell = sheet.getSelection().getCurrentCell();
@@ -208,14 +203,10 @@ function anmeldebestätigung() {
     );
     return;
   }
-  let rowValues = sheet
-    .getRange(row, 1, 1, sheet.getLastColumn())
-    .getValues()[0];
+  let rowValues = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
   let rowNote = sheet.getRange(row, 1).getNote();
   if (!isEmpty(rowNote)) {
-    SpreadsheetApp.getUi().alert(
-      "Die ausgewählte Zeile hat eine Notiz und ist deshalb ungültig",
-    );
+    SpreadsheetApp.getUi().alert("Die ausgewählte Zeile hat eine Notiz und ist deshalb ungültig");
     return;
   }
   if (isEmpty(rowValues[verifikationsIndex - 1])) {
@@ -241,9 +232,7 @@ function anmeldebestätigung() {
 
   let betrag: number = kursPreis(kurs, mitgliedsNummer);
   let zahlungsText =
-    "Wir ziehen die Teilnahmegebühr von " +
-    betrag +
-    "€ in den nächsten Tagen ein.";
+    "Wir ziehen die Teilnahmegebühr von " + betrag + "€ in den nächsten Tagen ein.";
 
   let eigenes = rowValues[eigenesIndex - 1];
   let eigenesText =
@@ -271,9 +260,7 @@ function anmeldebestätigung() {
   }
 
   let termin =
-    any2Str(kursRow[tag1Index - 1], "E 'den' dd.MM", false) +
-    " von " +
-    kursRow[uhrZeitIndex - 1];
+    any2Str(kursRow[tag1Index - 1], "E 'den' dd.MM", false) + " von " + kursRow[uhrZeitIndex - 1];
   Logger.log("termin %s", termin);
 
   template.anrede = anrede;
@@ -282,9 +269,7 @@ function anmeldebestätigung() {
   template.zahlungstext = zahlungsText;
   template.eigenes = eigenesText;
 
-  SpreadsheetApp.getUi().alert(
-    herrFrau + " " + name + " bucht den Kurs " + kurs,
-  );
+  SpreadsheetApp.getUi().alert(herrFrau + " " + name + " bucht den Kurs " + kurs);
 
   let htmlText: string = template.evaluate().getContent();
   let textbody = "HTML only";
@@ -332,30 +317,17 @@ function verifyEmail() {
   let evSheet = ssheet.getSheetByName("Email-Verifikation");
   if (evSheet.getLastRow() < 2) return;
   // It is a big nuisance that getSheetValues with a row count of 0 throws an error, instead of returning an empty list.
-  let evalues = evSheet.getSheetValues(
-    2,
-    1,
-    evSheet.getLastRow() - 1,
-    evSheet.getLastColumn(),
-  ); // Mit dieser Email-Adresse
+  let evalues = evSheet.getSheetValues(2, 1, evSheet.getLastRow() - 1, evSheet.getLastColumn()); // Mit dieser Email-Adresse
 
   let numRows = buchungenSheet.getLastRow();
   if (numRows < 2) return;
-  let bvalues = buchungenSheet.getSheetValues(
-    2,
-    1,
-    numRows - 1,
-    buchungenSheet.getLastColumn(),
-  );
+  let bvalues = buchungenSheet.getSheetValues(2, 1, numRows - 1, buchungenSheet.getLastColumn());
   Logger.log("bvalues %s", bvalues);
 
   for (let bx in bvalues) {
     let bxi = +bx; // confusingly, bx is initially a string, and is interpreted as A1Notation in sheet.getRange(bx) !
     let brow = bvalues[bxi];
-    if (
-      !isEmpty(brow[mailIndex - 1]) &&
-      isEmpty(brow[verifikationsIndex - 1])
-    ) {
+    if (!isEmpty(brow[mailIndex - 1]) && isEmpty(brow[verifikationsIndex - 1])) {
       let baddr = (brow[1] as string).toLowerCase();
       for (let ex in evalues) {
         let erow = evalues[ex];
@@ -389,7 +361,6 @@ function sendVerifEmail(rowValues: any[]) {
     "Allgemeiner Deutscher Fahrrad-Club München e.V.\n" +
     "Platenstraße 4\n" +
     "80336 München\n" +
-    "Tel. 089 | 46133830 (Mo. 10-11 Uhr, Fr. 12-13 Uhr)\n" +
     "radfahrschule@adfc-muenchen.de\n" +
     "https://muenchen.adfc.de/radfahrschule\n";
   let options = {
@@ -417,10 +388,7 @@ function checkBuchung(e: SSEvent) {
     return;
   }
   if (iban != ibanNV) {
-    let cellIban = range.getCell(
-      1,
-      headers["Buchungen"]["Lastschrift: IBAN-Kontonummer"],
-    );
+    let cellIban = range.getCell(1, headers["Buchungen"]["Lastschrift: IBAN-Kontonummer"]);
     cellIban.setValue(iban);
   }
   // Die Zellen Zustimmung und Bestätigung sind im Formular als Pflichtantwort eingetragen
@@ -484,10 +452,7 @@ function sendeAntwort(
   let ss = SpreadsheetApp.getActiveSpreadsheet();
   let evSheet = ss.getSheetByName("Email-Verifikation");
   let numRows = evSheet.getLastRow();
-  let evalues =
-    numRows < 2
-      ? []
-      : evSheet.getSheetValues(2, 1, evSheet.getLastRow() - 1, 3);
+  let evalues = numRows < 2 ? [] : evSheet.getSheetValues(2, 1, evSheet.getLastRow() - 1, 3);
   for (let i = 0; i < evalues.length; i++) {
     // Mit dieser Email-Adresse
     if (evalues[i][2].toLowerCase().trim() === emailTo) {
@@ -564,12 +529,8 @@ function updateReste(): boolean {
     buchungenVals = [];
     buchungenNotes = [];
   } else {
-    buchungenVals = buchungenSheet
-      .getRange(2, 1, buchungenRows, buchungenCols)
-      .getValues();
-    buchungenNotes = buchungenSheet
-      .getRange(2, 1, buchungenRows, buchungenCols)
-      .getNotes();
+    buchungenVals = buchungenSheet.getRange(2, 1, buchungenRows, buchungenCols).getValues();
+    buchungenNotes = buchungenSheet.getRange(2, 1, buchungenRows, buchungenCols).getNotes();
   }
 
   let gebuchtMap: MapS2I = {};
@@ -600,13 +561,7 @@ function updateReste(): boolean {
     if (rest !== restR) {
       kurseSheet.getRange(2 + r, restIndex).setValue(rest);
       SpreadsheetApp.getUi().alert(
-        "Freie Plätze des Kurses '" +
-          kurs +
-          "' von " +
-          restR +
-          " auf " +
-          rest +
-          " geändert!",
+        "Freie Plätze des Kurses '" + kurs + "' von " + restR + " auf " + rest + " geändert!",
       );
     }
   }
@@ -674,12 +629,7 @@ function updateForm() {
     else freiText = ", noch " + rest + " Plätze frei";
 
     let desc =
-      bolderizeWord(mr) +
-      ", " +
-      kursObj["Uhrzeit"] +
-      ", " +
-      any2Str(kursObj["Tag 1"]) +
-      freiText;
+      bolderizeWord(mr) + ", " + kursObj["Uhrzeit"] + ", " + any2Str(kursObj["Tag 1"]) + freiText;
     Logger.log("mr %s desc %s", mr, desc);
     descs.push(desc);
     let ok = +kursObj["Restplätze"] > 0;
@@ -719,7 +669,6 @@ function sendWrongIbanEmail(anrede: string, empfaenger: string, iban: string) {
     "Allgemeiner Deutscher Fahrrad-Club München e.V.\n" +
     "Platenstraße 4\n" +
     "80336 München\n" +
-    "Tel. 089 | 46133830 (Mo. 10-11 Uhr, Fr. 12-13 Uhr)\n" +
     "radfahrschule@adfc-muenchen.de\n" +
     "https://muenchen.adfc.de/radfahrschule\n";
   GmailApp.sendEmail(empfaenger, subject, body);
@@ -807,11 +756,7 @@ function isValidIban(iban: string): boolean {
 
 // I need any2str because a date copied to temp sheet showed as date.toString().
 // A ' in front of the date came too late.
-function any2Str(
-  val: any,
-  fmt: string = "E dd.MM",
-  short: boolean = true,
-): string {
+function any2Str(val: any, fmt: string = "E dd.MM", short: boolean = true): string {
   if (typeof val == "object" && "getUTCHours" in val) {
     let d = Utilities.formatDate(
       val,
@@ -847,16 +792,12 @@ function printKursMembers() {
   if (!inited) init();
   let sheet = SpreadsheetApp.getActiveSheet();
   if (sheet.getName() != "Kurse") {
-    SpreadsheetApp.getUi().alert(
-      "Bitte eine Zeile im Sheet 'Kurse' selektieren",
-    );
+    SpreadsheetApp.getUi().alert("Bitte eine Zeile im Sheet 'Kurse' selektieren");
     return;
   }
   let curCell = sheet.getSelection().getCurrentCell();
   if (!curCell) {
-    SpreadsheetApp.getUi().alert(
-      "Bitte zuerst eine Zeile im Sheet 'Kurse' selektieren",
-    );
+    SpreadsheetApp.getUi().alert("Bitte zuerst eine Zeile im Sheet 'Kurse' selektieren");
     return;
   }
   let row = curCell.getRow();
@@ -866,14 +807,10 @@ function printKursMembers() {
     );
     return;
   }
-  let rowValues = sheet
-    .getRange(row, 1, 1, sheet.getLastColumn())
-    .getValues()[0];
+  let rowValues = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
   let rowNote = sheet.getRange(row, 1).getNote();
   if (!isEmpty(rowNote)) {
-    SpreadsheetApp.getUi().alert(
-      "Die ausgewählte Zeile hat eine Notiz und ist deshalb ungültig",
-    );
+    SpreadsheetApp.getUi().alert("Die ausgewählte Zeile hat eine Notiz und ist deshalb ungültig");
     return;
   }
   let kurs: string = rowValues[kursNameIndex - 1];
@@ -887,9 +824,7 @@ function printKursMembers() {
     SpreadsheetApp.getUi().alert("Keine Buchungen gefunden");
     return;
   }
-  buchungenVals = buchungenSheet
-    .getRange(2, 1, buchungenRows, buchungenCols)
-    .getValues();
+  buchungenVals = buchungenSheet.getRange(2, 1, buchungenRows, buchungenCols).getValues();
   buchungenNotes = buchungenSheet.getRange(2, 1, buchungenRows, 1).getNotes();
 
   let ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -991,19 +926,14 @@ function printSelectedRange(kurs: string) {
   let ev = htmlTemplate.evaluate();
   Logger.log("ev2" + ev.getContent());
 
-  SpreadsheetApp.getUi().showModalDialog(
-    ev.setHeight(10).setWidth(100),
-    "Drucke Auswahl",
-  );
+  SpreadsheetApp.getUi().showModalDialog(ev.setHeight(10).setWidth(100), "Drucke Auswahl");
 }
 
 function checkBuchungManually() {
   if (!inited) init();
   let sheet = SpreadsheetApp.getActiveSheet();
   if (sheet.getName() != "Buchungen") {
-    SpreadsheetApp.getUi().alert(
-      "Bitte eine Zeile im Sheet 'Buchungen' selektieren",
-    );
+    SpreadsheetApp.getUi().alert("Bitte eine Zeile im Sheet 'Buchungen' selektieren");
     return;
   }
   let curCell = sheet.getSelection().getCurrentCell();
@@ -1020,17 +950,13 @@ function checkBuchungManually() {
   }
   let rowNote = sheet.getRange(rowIdx, 1).getNote();
   if (!isEmpty(rowNote)) {
-    SpreadsheetApp.getUi().alert(
-      "Die ausgewählte Zeile hat eine Notiz und ist deshalb ungültig",
-    );
+    SpreadsheetApp.getUi().alert("Die ausgewählte Zeile hat eine Notiz und ist deshalb ungültig");
     return;
   }
   let brange = sheet.getRange(rowIdx, 1, 1, sheet.getLastColumn());
   let brow = brange.getValues()[0];
   if (!isEmpty(brow[anmeldebestIndex - 1])) {
-    SpreadsheetApp.getUi().alert(
-      "Die ausgewählte Buchung wurde schon bestätigt",
-    );
+    SpreadsheetApp.getUi().alert("Die ausgewählte Buchung wurde schon bestätigt");
     return;
   }
 
